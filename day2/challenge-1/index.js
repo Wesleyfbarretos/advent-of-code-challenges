@@ -21,22 +21,28 @@ for(const game of inputArr) {
     const cubesQtyArr = game.split(':')[1].replace(/\s/g, '').split(';');
 
     for(const round of cubesQtyArr) {
+
         for(const cubesQty of round.split(',')) {
+
             if(cubesQty.indexOf('red') !== -1) redCubes += +cubesQty.replace("red", '')
 
             else if(cubesQty.indexOf('blue') !== -1) blueCubes += +cubesQty.replace("blue", '')
 
             else greenCubes += +cubesQty.replace("green", '')
+
         }  
 
         if(redCubes > maxOfRedCubes || blueCubes > maxOfBlueCubes || greenCubes > maxOfGreenCubes) {
+
             canBeAdd = false;
             break
+            
         }
         
         redCubes = 0;
         greenCubes = 0;
         blueCubes = 0;
+
     }
 
     if(canBeAdd) count += +(/Game ([0-9]+)/.exec(game)[1]);
