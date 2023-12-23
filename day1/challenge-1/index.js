@@ -1,5 +1,5 @@
 console.time()
-const input = require("./input");
+const input = require("../input");
 
 const lineNumbersArr = input.replace(/[^0-9\n]+/g, '').split('\n')
 

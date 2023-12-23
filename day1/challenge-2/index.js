@@ -1,5 +1,5 @@
 console.time()
-const input = require("./input.js");
+const input = require("../input.js");
 
 const treatedInput = input.split('\n');
 
@@ -40,12 +40,12 @@ for(const line of treatedInput) {
         const sIndex = line.indexOf(key)
         const lIndex = line.lastIndexOf(key)
         
-        if(sIndex !== - 1 && sIndex < smallerIndex) {
+        if(sIndex !== -1 && sIndex < smallerIndex) {
             smallerIndex = sIndex
             smallValue = key
         }
 
-        if(lIndex !== - 1 && lIndex > biggerIndex) {
+        if(lIndex !== -1 && lIndex > biggerIndex) {
             biggerIndex = lIndex
             biggerValue = key
         }
@@ -54,7 +54,7 @@ for(const line of treatedInput) {
 
     firstNumber = !isNaN(smallValue) ? smallValue : stringNumberMapValue[smallValue]
     lastNumber = !isNaN(biggerValue) ? biggerValue : stringNumberMapValue[biggerValue]
-  
+    
     total += +(firstNumber + (lastNumber ? lastNumber : firstNumber));
 
     firstNumber = undefined;
