@@ -41,13 +41,17 @@ for(const line of treatedInput) {
         const lIndex = line.lastIndexOf(key)
         
         if(sIndex !== -1 && sIndex < smallerIndex) {
+
             smallerIndex = sIndex
             smallValue = key
+
         }
 
         if(lIndex !== -1 && lIndex > biggerIndex) {
+
             biggerIndex = lIndex
             biggerValue = key
+            
         }
 
     }
