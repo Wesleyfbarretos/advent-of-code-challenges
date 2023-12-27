@@ -88,4 +88,5 @@ for(let i = 0; i < treatedInput.length; i++) {
 }
 
 console.log(total)
+
 console.timeEnd()
