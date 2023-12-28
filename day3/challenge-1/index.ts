@@ -1,20 +1,17 @@
 import { input } from "../input";
 
 console.time();
-// 531932
+
 const treatedInput = input.split('\n');
 
 let total = 0;
-
-let gear = '';
-
 interface IAdjacentLines {
     gearIndex: number,
     gearLength: number,
     line: string
 }
 
-const findAdjacentLinesSymbols = ({ gearIndex, gearLength, line }: IAdjacentLines): boolean => {
+const findAdjacentLineSymbols = ({ gearIndex, gearLength, line }: IAdjacentLines): boolean => {
 
     const matchesStart = gearIndex - gearLength - 1;
 
@@ -23,7 +20,7 @@ const findAdjacentLinesSymbols = ({ gearIndex, gearLength, line }: IAdjacentLine
     for(let matchesIndex = matchesStart; matchesIndex <= matchesEnd; matchesIndex++) {
 
         const lineIndex = line[matchesIndex];
-
+        
         const lineIndexIsSymbol = lineIndex && lineIndex !== '.' && isNaN(+lineIndex)
 
         if(lineIndexIsSymbol) return true
@@ -34,6 +31,8 @@ const findAdjacentLinesSymbols = ({ gearIndex, gearLength, line }: IAdjacentLine
 }
 
 for(const _lineIndex in treatedInput) {
+
+    let gear = '';
 
     const lineIndex = +_lineIndex;
 
@@ -49,18 +48,18 @@ for(const _lineIndex in treatedInput) {
             
             gear += gearValue;
 
-            continue;
+            if(gearIndex !== line.length - 1) continue;
             
         } 
         
         if(!gear) continue;
 
-        const indexPrefix = line[gearIndex - 1 - gear.length];
-        
-        const indexSufix = line[gearIndex];
+        const indexSufix = isNaN(+gearValue) ? gearValue : null;
 
+        const indexPrefix = indexSufix ? line[gearIndex - gear.length - 1] : line[gearIndex - gear.length];
+    
         if(indexPrefix && indexPrefix !== '.' || indexSufix && indexSufix !== '.') {
-
+            
             total += +gear;
 
             gear = '';
@@ -73,14 +72,14 @@ for(const _lineIndex in treatedInput) {
 
             const topLine = treatedInput[+lineIndex - 1];
                             
-            if(findAdjacentLinesSymbols({ gearIndex, gearLength: gear.length, line: topLine })) {
+            if(findAdjacentLineSymbols({ gearIndex, gearLength: gear.length, line: topLine })) {
 
                     total += +gear;
 
                     gear = '';
 
-                    continue;
-                
+                    continue; 
+
             }
 
         } 
@@ -89,7 +88,7 @@ for(const _lineIndex in treatedInput) {
 
             const bottomLine = treatedInput[+lineIndex + 1];
                             
-            if(findAdjacentLinesSymbols({ gearIndex, gearLength: gear.length, line: bottomLine })) {
+            if(findAdjacentLineSymbols({ gearIndex, gearLength: gear.length, line: bottomLine })) {
 
                     total += +gear;
 
@@ -99,12 +98,12 @@ for(const _lineIndex in treatedInput) {
                 
             }
 
-        }   
-
+        }
+        
         gear = '';
                 
     }
-
+    
 }
 
 console.log(total);
