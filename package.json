@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "clear && nodemon --exec ts-node ./day3/challenge-1/index.ts"
+    "start:dev": "clear && nodemon --exec ts-node ./day3/challenge-2/index.ts"
   },
   "keywords": [],
   "author": "",
