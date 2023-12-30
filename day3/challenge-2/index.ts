@@ -1,27 +1,66 @@
-// console.time()
+console.time()
 
 import { input } from "../input"
-import { IAdjacentLinesGearRatio, ICurrentLineGearRatio, ILineParts, ILinesResponse } from "./interfaces";
+import { IAdjacentLineSearch, IAdjacentLinesGearRatio, ICurrentLineGearRatio, ILineParts } from "./interfaces";
 
 const lines = input.split('\n');
 
-let total = 0;
-// TODO - FIX FAZER COM QUE A PROCURA ACONTEÇA A PARTIR DO INDEX ACIMA DO GEAR PRIORIZANDO A DIREITA.
-const searchLineParts = ({ gearIndex, currentLine, direction }: ILineParts): string => {
+let totalGearRatio = 0;
+
+const isNumber = (value: string | number): boolean => !isNaN(+value);
+
+const adjacentLineFromGearIndexSearch = ({ gearIndex, currentLine }: ILineParts) => {
 
     let sumOfParts = '';
 
+    let leftPartsValue = '';
+
+    let rightPartsValue = '';
+
+    const gearIndexValue = currentLine[gearIndex];
+
+    for(let leftIndex = gearIndex - 1; leftIndex >= 0; leftIndex--) {
+
+        const leftValue = currentLine[leftIndex];
+
+        if(!isNumber(leftValue)) break;
+
+        leftPartsValue = leftValue + leftPartsValue;
+
+    }
+                    
+    for(let rightIndex = gearIndex + 1; rightIndex < currentLine.length; rightIndex++) {
+
+        const rightValue = currentLine[rightIndex];
+
+        if(!isNumber(rightValue)) break;
+
+        rightPartsValue += rightValue;
+
+    }
+
+    sumOfParts = leftPartsValue + gearIndexValue + rightPartsValue;
+
+    return sumOfParts
+
+}
+
+const searchLineParts = ({ gearIndex, currentLine, direction }: ILineParts): string => {
+
+    let sumOfParts = '';
+    
     switch(direction) {
 
         case 'left':
 
-            for(let leftIndex = gearIndex - 1; leftIndex >= 0; leftIndex--) {
 
-                const leftValue = currentLine[leftIndex];
+            for(let currentIndex = gearIndex - 1; currentIndex >= 0; currentIndex--) {
+
+                const currentValue = currentLine[currentIndex];
+                
+                if(!isNumber(currentValue)) break;
         
-                if(isNaN(+leftValue)) break;
-        
-                sumOfParts = leftValue + sumOfParts;
+                sumOfParts = currentValue + sumOfParts;
         
             }
 
@@ -29,13 +68,14 @@ const searchLineParts = ({ gearIndex, currentLine, direction }: ILineParts): str
 
         case 'right':
             
-            for(let rightIndex = gearIndex + 1; rightIndex < currentLine.length; rightIndex++) {
 
-                const rightValue = currentLine[rightIndex];
+            for(let currentIndex = gearIndex + 1; currentIndex < currentLine.length; currentIndex++) {
+
+                const currentValue = currentLine[currentIndex];
         
-                if(isNaN(+rightValue)) break;
+                if(!isNumber(currentValue)) break;
         
-                sumOfParts = rightValue + sumOfParts;
+                sumOfParts += currentValue;
         
             }
 
@@ -48,50 +88,62 @@ const searchLineParts = ({ gearIndex, currentLine, direction }: ILineParts): str
 
 }
 
-const sumCurrentLineGearRatio = ({ gearIndex, lineIndex, lines }: ICurrentLineGearRatio): ILinesResponse => {
+const currentLineParts = ({ gearIndex, lineIndex, lines }: ICurrentLineGearRatio): string[] => {
 
-    const response: ILinesResponse = {
-        gearRatio: 0,
-        matches: false
-    }
+    const parts = [];
 
     const currentLine = lines[lineIndex]
 
-    const leftNumberTotal = searchLineParts({ currentLine, gearIndex, direction: "left" });
+    const leftNumbersTotal = searchLineParts({ currentLine, gearIndex, direction: "left" });
 
-    if(!leftNumberTotal) return response;
+    const rightNumbersTotal = searchLineParts({ currentLine, gearIndex, direction: "right"});
 
-    const rightNumberTotal = searchLineParts({ currentLine, gearIndex, direction: "right"});
+    if(leftNumbersTotal) parts.push(leftNumbersTotal);
 
-    if(!rightNumberTotal) return response;
+    if(rightNumbersTotal) parts.push(rightNumbersTotal);
 
-    return {
-        gearRatio: +leftNumberTotal * +rightNumberTotal,
-        matches: true
-    } as ILinesResponse
+    return parts
 
 }
 
-const sumAdjacentLinesGearRatio = ({ gearIndex, lineIndex, lines }: IAdjacentLinesGearRatio): ILinesResponse => {
+const searchAdjacentLineParts = ({ currentLine, gearIndex }: IAdjacentLineSearch) => {
 
-    const response: ILinesResponse = {
-        gearRatio: 0,
-        matches: false
-    } 
+    const currentLineLeftNumbersTotal = searchLineParts({ currentLine, gearIndex, direction: 'left' });
 
-    const parts = [];
+    const currentLineRightNumbersTotal = searchLineParts({ currentLine, gearIndex, direction: 'right' });
+
+    return {
+        leftNumbersTotal: currentLineLeftNumbersTotal,
+        rightNumbersTotal: currentLineRightNumbersTotal
+    }
+    
+}
+
+const adjacentLinesParts = ({ gearIndex, lineIndex, lines }: IAdjacentLinesGearRatio): string[] => {
+
+    const parts: string[] = [];
 
     if(lineIndex !== 0) {
 
         const topLine = lines[lineIndex - 1];
+
+        if(!isNumber(topLine[gearIndex])) {
+
+            const { leftNumbersTotal, rightNumbersTotal } = searchAdjacentLineParts({ currentLine: topLine, gearIndex });
+
+            if(leftNumbersTotal) parts.push(leftNumbersTotal);
+
+            if(rightNumbersTotal) parts.push(rightNumbersTotal);
+
+        } else {
+
+            const valueFromGearIndex = adjacentLineFromGearIndexSearch({ currentLine: topLine, gearIndex })
+    
+            if(valueFromGearIndex) parts.push(valueFromGearIndex);
+
+        }
         
-        const topLineLeftNumberTotal = searchLineParts({ currentLine: topLine, gearIndex, direction: "left" });
 
-        const topLineRightNumberTotal = searchLineParts({ currentLine: topLine, gearIndex, direction: "right" });
-
-        if(topLineLeftNumberTotal) parts.push(topLineLeftNumberTotal);
-
-        if(topLineRightNumberTotal) parts.push(topLineRightNumberTotal);
 
     }
 
@@ -99,26 +151,26 @@ const sumAdjacentLinesGearRatio = ({ gearIndex, lineIndex, lines }: IAdjacentLin
 
         const bottomLine = lines[lineIndex + 1];
 
-        const bottomLineLeftNumberTotal = searchLineParts({ currentLine: bottomLine, gearIndex, direction: "left" });
-        
-        if(bottomLineLeftNumberTotal) parts.push(bottomLineLeftNumberTotal);
+        if(!isNumber(bottomLine[gearIndex])) {
 
-        if(parts.length > 2) return response;
+           const { leftNumbersTotal, rightNumbersTotal } = searchAdjacentLineParts({ currentLine: bottomLine, gearIndex })
 
-        const bottomLineRightNumberTotal = searchLineParts({ currentLine: bottomLine, gearIndex, direction: "right" });
+           if(leftNumbersTotal) parts.push(leftNumbersTotal);
 
-        if(bottomLineRightNumberTotal) parts.push(bottomLineRightNumberTotal);
+           if(rightNumbersTotal) parts.push(rightNumbersTotal);
+
+        } else {
+
+            const valueFromGearIndex = adjacentLineFromGearIndexSearch({ currentLine: bottomLine, gearIndex })
+    
+            if(valueFromGearIndex) parts.push(valueFromGearIndex);
+            
+        }
+
 
     }
 
-    if(parts.length > 2) return response;
-
-    if(!parts.length) return response;
-
-    return {
-        gearRatio: parts.reduce((acum, value) => +acum * +value, 1),
-        matches: true
-    } as ILinesResponse
+    return parts
 
 }
 
@@ -135,27 +187,22 @@ for(const _lineIndex in lines) {
         const gear = line[gearIndex];
 
         if(gear !== '*') continue;
-    
-        const { gearRatio: lineGearRatio, matches: lineMatch } = sumCurrentLineGearRatio({ gearIndex, lineIndex, lines });
 
-        const { gearRatio: adjacentLinesGearRatio, matches: adjLineMatch } = sumAdjacentLinesGearRatio({ gearIndex, lineIndex, lines });
+        const totalOfParts = [
+            ...currentLineParts({ gearIndex, lineIndex, lines }),
+            ...adjacentLinesParts({ gearIndex, lineIndex, lines })
+        ]
 
-        if(lineMatch && adjLineMatch) continue;
+        if(totalOfParts.length === 2) {
 
-        if(lineMatch) {
-            
-            total += lineGearRatio
-
-            continue
-
+            totalGearRatio += totalOfParts.reduce((acum, value) => acum * +value, 1)
+        
         }
-
-        if(adjLineMatch) total += adjacentLinesGearRatio
 
     }
 
 }
 
-console.log(total)
-//
+console.log(totalGearRatio)
+
 console.timeEnd()   
