@@ -21,4 +21,12 @@ export interface ILineParts {
 
 }
 
-export interface IAdjacentLineSearch extends ILineParts {}
+export interface ISearchAdjacentLineParts extends ILineParts {}
+
+export interface ISearchAdjacentLinePartsResponse {
+
+    leftNumbersTotal: string,
+
+    rightNumbersTotal: string
+
+}

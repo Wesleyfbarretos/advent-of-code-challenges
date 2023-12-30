@@ -1,7 +1,7 @@
 console.time()
 
 import { input } from "../input"
-import { IAdjacentLineSearch, IAdjacentLinesGearRatio, ICurrentLineGearRatio, ILineParts } from "./interfaces";
+import { ISearchAdjacentLineParts, IAdjacentLinesGearRatio, ICurrentLineGearRatio, ILineParts, ISearchAdjacentLinePartsResponse } from "./interfaces/challenge-2.interface";
 
 const lines = input.split('\n');
 
@@ -9,7 +9,7 @@ let totalGearRatio = 0;
 
 const isNumber = (value: string | number): boolean => !isNaN(+value);
 
-const adjacentLineFromGearIndexSearch = ({ gearIndex, currentLine }: ILineParts) => {
+const adjacentLineFromGearIndexSearch = ({ gearIndex, currentLine }: ILineParts): string => {
 
     let sumOfParts = '';
 
@@ -106,7 +106,7 @@ const currentLineParts = ({ gearIndex, lineIndex, lines }: ICurrentLineGearRatio
 
 }
 
-const searchAdjacentLineParts = ({ currentLine, gearIndex }: IAdjacentLineSearch) => {
+const searchAdjacentLineParts = ({ currentLine, gearIndex }: ISearchAdjacentLineParts): ISearchAdjacentLinePartsResponse => {
 
     const currentLineLeftNumbersTotal = searchLineParts({ currentLine, gearIndex, direction: 'left' });
 
